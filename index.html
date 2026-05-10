@@ -1,0 +1,1698 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Should I Rest Today?</title>
+  <style>
+    :root {
+      --bg: #f4f6f5;
+      --panel: #ffffff;
+      --ink: #18201d;
+      --muted: #66736d;
+      --line: #dbe2de;
+      --green: #1f9d62;
+      --green-soft: #e0f4e9;
+      --orange: #d27a19;
+      --orange-soft: #fff0d9;
+      --red: #cf3f3f;
+      --red-soft: #ffe2df;
+      --teal: #16848a;
+      --button: #18201d;
+      --button-hover: #2d3834;
+      --shadow: 0 18px 40px rgba(24, 32, 29, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(31, 157, 98, 0.12), transparent 32rem),
+        linear-gradient(180deg, #fbfcfb 0%, var(--bg) 48%, #eef3f1 100%);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .app {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .answer,
+    .panel {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(219, 226, 222, 0.92);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .answer {
+      padding: 28px;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .answer::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -120px auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--status-color) 24%, transparent);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      margin: 0 0 8px;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      font-size: 3rem;
+      line-height: 0.98;
+      letter-spacing: 0;
+      margin-bottom: 14px;
+      max-width: 780px;
+    }
+
+    .headline {
+      color: var(--status-color);
+    }
+
+    .answer-copy {
+      color: #40504a;
+      font-size: 1.08rem;
+      max-width: 680px;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .answer-meta {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pill {
+      align-items: center;
+      background: #eef4f1;
+      border: 1px solid #d9e4df;
+      border-radius: 999px;
+      color: #33413c;
+      display: inline-flex;
+      font-size: 0.88rem;
+      font-weight: 800;
+      gap: 8px;
+      min-height: 34px;
+      padding: 6px 12px;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      background: var(--dot-color);
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot-color) 16%, transparent);
+      display: inline-block;
+      flex: 0 0 auto;
+      height: 10px;
+      width: 10px;
+    }
+
+    .log-card {
+      padding: 20px;
+    }
+
+    .panel h2 {
+      font-size: 1.05rem;
+      margin-bottom: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    label {
+      color: #31403a;
+      display: grid;
+      font-size: 0.85rem;
+      font-weight: 800;
+      gap: 6px;
+    }
+
+    input,
+    select,
+    textarea {
+      background: #fbfcfb;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      min-height: 42px;
+      padding: 9px 10px;
+      width: 100%;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(22, 132, 138, 0.12);
+      outline: 0;
+    }
+
+    textarea {
+      min-height: 66px;
+      resize: vertical;
+    }
+
+    .span-2 {
+      grid-column: span 2;
+    }
+
+    .checkline {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      min-height: 42px;
+    }
+
+    .checkline input {
+      accent-color: var(--teal);
+      height: 18px;
+      min-height: 18px;
+      width: 18px;
+    }
+
+    .primary-button {
+      background: var(--button);
+      color: white;
+      min-height: 44px;
+      padding: 10px 14px;
+      width: 100%;
+    }
+
+    .primary-button:hover {
+      background: var(--button-hover);
+    }
+
+    .secondary-button,
+    .danger-button {
+      background: #eef4f1;
+      border: 1px solid #d9e4df;
+      color: #25312d;
+      min-height: 36px;
+      padding: 8px 10px;
+    }
+
+    .secondary-button:hover {
+      background: #e4eeea;
+    }
+
+    .danger-button {
+      background: #fff0ee;
+      border-color: #ffd2cc;
+      color: #9d2929;
+    }
+
+    .danger-button:hover {
+      background: #ffe2df;
+    }
+
+    .content-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      align-items: start;
+    }
+
+    .status-panel,
+    .history-panel,
+    .data-panel {
+      padding: 20px;
+    }
+
+    .section-header {
+      align-items: flex-end;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .section-header p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin: 0;
+    }
+
+    .status-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .bucket-card {
+      background: #fbfcfb;
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--bucket-color);
+      border-radius: 8px;
+      min-height: 148px;
+      padding: 13px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bucket-card.red {
+      background: linear-gradient(180deg, var(--red-soft), #fffafa);
+    }
+
+    .bucket-card.orange {
+      background: linear-gradient(180deg, var(--orange-soft), #fffdf8);
+    }
+
+    .bucket-card.green {
+      background: linear-gradient(180deg, var(--green-soft), #fbfffc);
+    }
+
+    .bucket-top {
+      align-items: flex-start;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .bucket-name {
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .bucket-state {
+      color: var(--bucket-color);
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .load-line {
+      background: rgba(24, 32, 29, 0.08);
+      border-radius: 999px;
+      height: 8px;
+      margin: 8px 0 10px;
+      overflow: hidden;
+    }
+
+    .load-fill {
+      background: var(--bucket-color);
+      border-radius: inherit;
+      height: 100%;
+      width: var(--fill-width);
+    }
+
+    .bucket-detail {
+      color: #53635d;
+      font-size: 0.86rem;
+      margin: 0;
+    }
+
+    .contributors {
+      color: #5f6d68;
+      font-size: 0.78rem;
+      margin-top: 8px;
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .recommendations {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 12px;
+    }
+
+    .recommendation {
+      background: #fbfcfb;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 92px;
+      padding: 12px;
+    }
+
+    .recommendation h3 {
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .recommendation p {
+      color: #4d5c56;
+      font-size: 0.86rem;
+      margin: 0;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .workout-item {
+      background: #fbfcfb;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .workout-main {
+      align-items: flex-start;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .workout-title {
+      font-weight: 900;
+      margin-bottom: 2px;
+    }
+
+    .workout-meta,
+    .workout-buckets,
+    .empty {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .workout-buckets {
+      margin-top: 8px;
+    }
+
+    .empty {
+      background: #fbfcfb;
+      border: 1px dashed #cbd7d1;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .data-actions {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .file-import {
+      grid-column: span 2;
+    }
+
+    .disclaimer {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin: 14px 0 0;
+    }
+
+    .toast {
+      background: #18201d;
+      border-radius: 8px;
+      bottom: 20px;
+      color: white;
+      left: 50%;
+      opacity: 0;
+      padding: 10px 14px;
+      pointer-events: none;
+      position: fixed;
+      transform: translate(-50%, 12px);
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 10;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 940px) {
+      .hero,
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .answer {
+        min-height: 220px;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .app {
+        width: min(100% - 20px, 1180px);
+        padding-top: 16px;
+      }
+
+      .answer,
+      .log-card,
+      .status-panel,
+      .history-panel,
+      .data-panel {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 2.25rem;
+      }
+
+      .form-grid,
+      .status-grid,
+      .recommendations,
+      .data-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .span-2,
+      .file-import {
+        grid-column: auto;
+      }
+
+      .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    .app {
+      width: min(1240px, calc(100% - 32px));
+    }
+
+    .topbar {
+      align-items: end;
+      display: flex;
+      gap: 16px;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .topbar h1 {
+      font-size: 3rem;
+      line-height: 1;
+      margin: 0;
+      max-width: none;
+    }
+
+    .recap-bar {
+      --status-color: var(--green);
+      align-items: center;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid color-mix(in srgb, var(--status-color) 36%, var(--line));
+      border-left: 8px solid var(--status-color);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(260px, 1fr) auto;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+    }
+
+    .recap-main {
+      align-items: baseline;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+    }
+
+    .recap-main .headline {
+      color: var(--status-color);
+      font-size: 1.35rem;
+      font-weight: 950;
+      line-height: 1.1;
+    }
+
+    .recap-main p {
+      color: #40504a;
+      margin: 0;
+    }
+
+    .workspace {
+      align-items: start;
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 390px);
+    }
+
+    .map-panel,
+    .backup-strip {
+      padding: 20px;
+    }
+
+    .map-layout {
+      align-items: start;
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+    }
+
+    .body-map-card {
+      align-items: center;
+      background: linear-gradient(180deg, #fbfcfb, #eef5f2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      justify-items: center;
+      min-height: 620px;
+      padding: 16px 12px;
+      position: sticky;
+      top: 18px;
+    }
+
+    .body-map-pair {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: 100%;
+    }
+
+    .body-view {
+      align-items: center;
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      min-width: 0;
+    }
+
+    .body-view-label {
+      color: #53635d;
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .body-map {
+      display: block;
+      height: min(60vh, 520px);
+      min-height: 410px;
+      overflow: visible;
+      width: 100%;
+    }
+
+    .body-part {
+      cursor: default;
+      fill: #dfe8e3;
+      opacity: 0.9;
+      stroke: #ffffff;
+      stroke-linejoin: round;
+      stroke-width: 4;
+      transition: fill 180ms ease, opacity 180ms ease, stroke-width 180ms ease;
+    }
+
+    .body-part[data-bucket] {
+      fill: var(--green);
+      opacity: 0.54;
+    }
+
+    .body-part[data-status="orange"] {
+      fill: var(--orange);
+      opacity: 0.82;
+    }
+
+    .body-part[data-status="red"] {
+      fill: var(--red);
+      opacity: 0.92;
+    }
+
+    .body-part:hover {
+      opacity: 1;
+      stroke-width: 7;
+    }
+
+    .body-overlay {
+      fill: none;
+      opacity: 0.8;
+      pointer-events: none;
+      stroke: var(--green);
+      stroke-width: 12;
+    }
+
+    .body-overlay[data-status="orange"] {
+      stroke: var(--orange);
+    }
+
+    .body-overlay[data-status="red"] {
+      stroke: var(--red);
+    }
+
+    .map-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .map-legend span {
+      align-items: center;
+      color: #53635d;
+      display: inline-flex;
+      font-size: 0.82rem;
+      font-weight: 800;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      border-radius: 50%;
+      display: inline-block;
+      height: 10px;
+      width: 10px;
+    }
+
+    .green-dot {
+      background: var(--green);
+    }
+
+    .orange-dot {
+      background: var(--orange);
+    }
+
+    .red-dot {
+      background: var(--red);
+    }
+
+    .map-layout .status-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .map-layout .bucket-card {
+      min-height: 128px;
+      padding: 12px;
+    }
+
+    .right-rail {
+      display: grid;
+      gap: 18px;
+    }
+
+    .right-rail .log-card,
+    .right-rail .history-panel {
+      padding: 18px;
+    }
+
+    .right-rail .history-panel {
+      position: relative;
+    }
+
+    .right-rail .history-panel::before {
+      background: var(--line);
+      content: "";
+      left: 28px;
+      position: absolute;
+      top: 74px;
+      bottom: 22px;
+      width: 2px;
+    }
+
+    .right-rail .history-list {
+      padding-left: 24px;
+      position: relative;
+    }
+
+    .right-rail .workout-item {
+      position: relative;
+    }
+
+    .right-rail .workout-item::before {
+      background: var(--teal);
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px var(--line);
+      content: "";
+      height: 12px;
+      left: -31px;
+      position: absolute;
+      top: 18px;
+      width: 12px;
+    }
+
+    .backup-strip {
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: none;
+      margin-top: 18px;
+    }
+
+    .backup-strip summary {
+      color: #31403a;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 900;
+    }
+
+    .backup-content {
+      margin-top: 12px;
+    }
+
+    .backup-strip .data-actions {
+      align-items: end;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .backup-strip .file-import {
+      grid-column: auto;
+    }
+
+    @media (max-width: 1080px) {
+      .workspace,
+      .map-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .body-map-card {
+        min-height: auto;
+        position: static;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .topbar h1 {
+        font-size: 2.25rem;
+      }
+
+      .recap-bar,
+      .map-layout .status-grid,
+      .backup-strip .data-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-meta {
+        justify-content: flex-start;
+      }
+
+      .body-map-pair {
+        gap: 8px;
+      }
+
+      .body-map {
+        height: auto;
+        min-height: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Local recovery map</p>
+        <h1>Should I rest today?</h1>
+      </div>
+      <button class="secondary-button" id="recalculateButton" type="button">Recalculate</button>
+    </header>
+
+    <section class="recap-bar" id="answerCard" aria-live="polite">
+      <div class="recap-main">
+        <span class="headline" id="answerHeadline">Checking...</span>
+        <p id="answerCopy">Your local recovery map will appear here after the app calculates your current training load.</p>
+      </div>
+      <div class="answer-meta" id="answerMeta"></div>
+    </section>
+
+    <section class="workspace">
+      <section class="panel map-panel" aria-labelledby="statusTitle">
+        <div class="section-header">
+          <div>
+            <h2 id="statusTitle">Body map</h2>
+            <p>Estimated local fatigue. Lower is better.</p>
+          </div>
+        </div>
+
+        <div class="map-layout">
+          <div class="body-map-card">
+            <div class="body-map-pair" id="bodyMap" aria-label="Front and back body recovery map"></div>
+
+            <div class="map-legend" aria-label="Color legend">
+              <span><i class="legend-dot green-dot"></i>Green</span>
+              <span><i class="legend-dot orange-dot"></i>Caution</span>
+              <span><i class="legend-dot red-dot"></i>Rest</span>
+            </div>
+          </div>
+
+          <div class="status-grid" id="statusGrid"></div>
+        </div>
+
+        <div class="recommendations" id="recommendations"></div>
+      </section>
+
+      <aside class="right-rail">
+        <section class="panel log-card" aria-labelledby="logTitle">
+          <h2 id="logTitle">Log a workout</h2>
+          <form id="workoutForm" class="form-grid">
+            <label class="span-2">
+              Activity
+              <select id="activityInput" required></select>
+            </label>
+
+            <label>
+              Date and time
+              <input id="timestampInput" type="datetime-local" required>
+            </label>
+
+            <label>
+              Duration
+              <input id="durationInput" type="number" min="5" max="600" step="5" value="60" required>
+            </label>
+
+            <label>
+              Intensity
+              <select id="intensityInput">
+                <option value="easy">Easy</option>
+                <option value="moderate" selected>Moderate</option>
+                <option value="hard">Hard</option>
+                <option value="max">Max</option>
+              </select>
+            </label>
+
+            <label>
+              Novelty
+              <span class="checkline">
+                <input id="noveltyInput" type="checkbox">
+                New or unusual
+              </span>
+            </label>
+
+            <label class="span-2">
+              Notes
+              <textarea id="notesInput" placeholder="Optional: hard overhangs, downhill run, felt wrecked..."></textarea>
+            </label>
+
+            <div class="span-2">
+              <button class="primary-button" type="submit">Add workout</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel history-panel" aria-labelledby="historyTitle">
+          <div class="section-header">
+            <div>
+              <h2 id="historyTitle">Recent workouts</h2>
+              <p>Stored only in this browser.</p>
+            </div>
+            <button class="danger-button" id="clearButton" type="button">Clear all</button>
+          </div>
+          <div class="history-list" id="historyList"></div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="backup-strip" aria-labelledby="dataTitle">
+      <details>
+        <summary id="dataTitle">Backup / import JSON</summary>
+        <div class="backup-content">
+          <div class="data-actions">
+            <button class="secondary-button" id="copyButton" type="button">Copy JSON</button>
+            <button class="secondary-button" id="downloadButton" type="button">Download JSON</button>
+            <label class="file-import">
+              Import JSON
+              <input id="importInput" type="file" accept="application/json,.json">
+            </label>
+          </div>
+          <p class="disclaimer">This is a simple heuristic for training planning, not medical advice or injury diagnosis.</p>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const STORAGE_KEY = "should-i-rest-today-v1";
+
+    const SETTINGS = {
+      greenThreshold: 25,
+      orangeThreshold: 60,
+      defaultRecoveryHalfLifeHours: 30
+    };
+
+    const BUCKETS = [
+      ["grip_forearms", "Grip / forearms"],
+      ["pulling_back", "Pulling / upper back"],
+      ["pushing_chest_shoulders", "Pushing / chest / shoulders"],
+      ["core", "Core"],
+      ["lower_back", "Lower back"],
+      ["quads", "Quads"],
+      ["hamstrings_glutes", "Hamstrings / glutes"],
+      ["calves", "Calves"],
+      ["cardio", "Cardio"],
+      ["general_fatigue", "General fatigue"]
+    ];
+
+    const INTENSITIES = {
+      easy: { label: "Easy", factor: 0.6 },
+      moderate: { label: "Moderate", factor: 1.0 },
+      hard: { label: "Hard", factor: 1.5 },
+      max: { label: "Max", factor: 2.2 }
+    };
+
+    const PRESETS = {
+      bouldering: {
+        label: "Bouldering",
+        halfLifeHours: 36,
+        loadMultiplier: 42,
+        weights: {
+          grip_forearms: 1,
+          pulling_back: 0.8,
+          pushing_chest_shoulders: 0.35,
+          core: 0.45,
+          cardio: 0.2,
+          general_fatigue: 0.55
+        }
+      },
+      route_climbing: {
+        label: "Route climbing",
+        halfLifeHours: 30,
+        loadMultiplier: 34,
+        weights: {
+          grip_forearms: 0.9,
+          pulling_back: 0.7,
+          pushing_chest_shoulders: 0.25,
+          core: 0.35,
+          cardio: 0.35,
+          general_fatigue: 0.45
+        }
+      },
+      easy_run: {
+        label: "Easy run",
+        halfLifeHours: 16,
+        loadMultiplier: 26,
+        weights: {
+          quads: 0.25,
+          hamstrings_glutes: 0.25,
+          calves: 0.45,
+          cardio: 0.75,
+          general_fatigue: 0.25
+        }
+      },
+      hard_run: {
+        label: "Hard run",
+        halfLifeHours: 30,
+        loadMultiplier: 38,
+        weights: {
+          quads: 0.55,
+          hamstrings_glutes: 0.45,
+          calves: 0.65,
+          cardio: 1,
+          general_fatigue: 0.6
+        }
+      },
+      cycling: {
+        label: "Cycling",
+        halfLifeHours: 20,
+        loadMultiplier: 30,
+        weights: {
+          quads: 0.45,
+          hamstrings_glutes: 0.3,
+          calves: 0.25,
+          cardio: 0.8,
+          general_fatigue: 0.35
+        }
+      },
+      hiking: {
+        label: "Hiking",
+        halfLifeHours: 24,
+        loadMultiplier: 28,
+        weights: {
+          lower_back: 0.25,
+          quads: 0.45,
+          hamstrings_glutes: 0.45,
+          calves: 0.5,
+          cardio: 0.45,
+          general_fatigue: 0.4
+        }
+      },
+      leg_day: {
+        label: "Leg day",
+        halfLifeHours: 42,
+        loadMultiplier: 44,
+        weights: {
+          lower_back: 0.25,
+          quads: 1,
+          hamstrings_glutes: 0.85,
+          calves: 0.25,
+          general_fatigue: 0.55
+        }
+      },
+      deadlift_posterior_chain: {
+        label: "Deadlift / posterior chain",
+        halfLifeHours: 48,
+        loadMultiplier: 46,
+        weights: {
+          grip_forearms: 0.35,
+          pulling_back: 0.45,
+          core: 0.5,
+          lower_back: 0.9,
+          hamstrings_glutes: 1,
+          general_fatigue: 0.75
+        }
+      },
+      push_day: {
+        label: "Push day",
+        halfLifeHours: 34,
+        loadMultiplier: 40,
+        weights: {
+          pushing_chest_shoulders: 1,
+          core: 0.2,
+          general_fatigue: 0.35
+        }
+      },
+      pull_day: {
+        label: "Pull day",
+        halfLifeHours: 38,
+        loadMultiplier: 42,
+        weights: {
+          grip_forearms: 0.55,
+          pulling_back: 1,
+          pushing_chest_shoulders: 0.2,
+          core: 0.25,
+          general_fatigue: 0.45
+        }
+      },
+      full_body_strength: {
+        label: "Full-body strength",
+        halfLifeHours: 42,
+        loadMultiplier: 40,
+        weights: {
+          grip_forearms: 0.35,
+          pulling_back: 0.55,
+          pushing_chest_shoulders: 0.55,
+          core: 0.55,
+          lower_back: 0.45,
+          quads: 0.55,
+          hamstrings_glutes: 0.55,
+          general_fatigue: 0.75
+        }
+      },
+      mobility_yoga: {
+        label: "Mobility / yoga",
+        halfLifeHours: 10,
+        loadMultiplier: 16,
+        weights: {
+          pushing_chest_shoulders: 0.1,
+          core: 0.2,
+          lower_back: 0.15,
+          hamstrings_glutes: 0.12,
+          calves: 0.08,
+          cardio: 0.08,
+          general_fatigue: 0.12
+        }
+      }
+    };
+
+    const state = loadState();
+
+    const els = {
+      answerCard: document.getElementById("answerCard"),
+      answerHeadline: document.getElementById("answerHeadline"),
+      answerCopy: document.getElementById("answerCopy"),
+      answerMeta: document.getElementById("answerMeta"),
+      bodyMap: document.getElementById("bodyMap"),
+      activityInput: document.getElementById("activityInput"),
+      timestampInput: document.getElementById("timestampInput"),
+      durationInput: document.getElementById("durationInput"),
+      intensityInput: document.getElementById("intensityInput"),
+      noveltyInput: document.getElementById("noveltyInput"),
+      notesInput: document.getElementById("notesInput"),
+      workoutForm: document.getElementById("workoutForm"),
+      statusGrid: document.getElementById("statusGrid"),
+      recommendations: document.getElementById("recommendations"),
+      historyList: document.getElementById("historyList"),
+      recalculateButton: document.getElementById("recalculateButton"),
+      clearButton: document.getElementById("clearButton"),
+      copyButton: document.getElementById("copyButton"),
+      downloadButton: document.getElementById("downloadButton"),
+      importInput: document.getElementById("importInput"),
+      toast: document.getElementById("toast")
+    };
+
+    init();
+
+    function init() {
+      populateActivities();
+      setDefaultTimestamp();
+      bindEvents();
+      render();
+      window.setInterval(render, 60 * 1000);
+    }
+
+    function populateActivities() {
+      els.activityInput.innerHTML = Object.entries(PRESETS)
+        .map(([key, preset]) => `<option value="${key}">${escapeHtml(preset.label)}</option>`)
+        .join("");
+    }
+
+    function bindEvents() {
+      els.workoutForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const timestamp = parseLocalDateTime(els.timestampInput.value);
+        const durationMinutes = Number(els.durationInput.value);
+
+        if (!timestamp || Number.isNaN(durationMinutes) || durationMinutes <= 0) {
+          showToast("Check the workout time and duration.");
+          return;
+        }
+
+        state.workouts.push({
+          id: createId(),
+          activity: els.activityInput.value,
+          timestamp: timestamp.toISOString(),
+          durationMinutes,
+          intensity: els.intensityInput.value,
+          novelty: els.noveltyInput.checked ? 1.25 : 1,
+          notes: els.notesInput.value.trim()
+        });
+
+        saveState();
+        els.notesInput.value = "";
+        els.noveltyInput.checked = false;
+        setDefaultTimestamp();
+        render();
+        showToast("Workout added.");
+      });
+
+      els.recalculateButton.addEventListener("click", () => {
+        render();
+        showToast("Recovery map refreshed.");
+      });
+
+      els.clearButton.addEventListener("click", () => {
+        if (!state.workouts.length) {
+          showToast("No workouts to clear.");
+          return;
+        }
+
+        if (window.confirm("Delete all saved workouts from this browser?")) {
+          state.workouts = [];
+          saveState();
+          render();
+          showToast("All workouts cleared.");
+        }
+      });
+
+      els.copyButton.addEventListener("click", async () => {
+        const json = exportJson();
+        try {
+          await navigator.clipboard.writeText(json);
+          showToast("JSON copied.");
+        } catch {
+          showToast("Clipboard blocked. Use Download JSON instead.");
+        }
+      });
+
+      els.downloadButton.addEventListener("click", () => {
+        const blob = new Blob([exportJson()], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `should-i-rest-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        showToast("JSON downloaded.");
+      });
+
+      els.importInput.addEventListener("change", async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+          const imported = JSON.parse(await file.text());
+          const workouts = validateImportedWorkouts(imported);
+          state.workouts = workouts;
+          saveState();
+          render();
+          showToast("JSON imported.");
+        } catch (error) {
+          showToast(error.message || "Import failed.");
+        } finally {
+          els.importInput.value = "";
+        }
+      });
+
+      els.historyList.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-delete-id]");
+        if (!button) return;
+
+        state.workouts = state.workouts.filter((workout) => workout.id !== button.dataset.deleteId);
+        saveState();
+        render();
+        showToast("Workout deleted.");
+      });
+    }
+
+    function render() {
+      const now = new Date();
+      const recovery = calculateRecovery(now);
+      renderAnswer(recovery, now);
+      renderBodyMap(recovery);
+      renderStatusGrid(recovery);
+      renderRecommendations(recovery.loads);
+      renderHistory();
+    }
+
+    function calculateRecovery(now) {
+      const loads = Object.fromEntries(BUCKETS.map(([key]) => [key, 0]));
+      const contributors = Object.fromEntries(BUCKETS.map(([key]) => [key, []]));
+
+      for (const workout of state.workouts) {
+        const preset = PRESETS[workout.activity];
+        if (!preset) continue;
+
+        const workoutDate = new Date(workout.timestamp);
+        if (Number.isNaN(workoutDate.getTime())) continue;
+
+        const elapsedHours = Math.max(0, (now - workoutDate) / 36e5);
+        const halfLifeHours = preset.halfLifeHours || SETTINGS.defaultRecoveryHalfLifeHours;
+        const tau = halfLifeHours / Math.log(2);
+        const decay = Math.exp(-elapsedHours / tau);
+        const durationFactor = Math.max(0.1, workout.durationMinutes / 60);
+        const intensityFactor = INTENSITIES[workout.intensity]?.factor || 1;
+        const noveltyFactor = Number(workout.novelty) || 1;
+
+        for (const [bucket, weight] of Object.entries(preset.weights)) {
+          const impulse = durationFactor * intensityFactor * weight * noveltyFactor * preset.loadMultiplier;
+          const remaining = impulse * decay;
+          loads[bucket] += remaining;
+
+          if (remaining >= 1) {
+            contributors[bucket].push({
+              label: preset.label,
+              amount: remaining,
+              halfLifeHours
+            });
+          }
+        }
+      }
+
+      const buckets = BUCKETS.map(([key, label]) => {
+        const load = loads[key];
+        const status = getStatus(load);
+        return {
+          key,
+          label,
+          load,
+          status,
+          timeToGreen: estimateTimeToGreen(key, now),
+          contributors: contributors[key]
+            .sort((a, b) => b.amount - a.amount)
+            .slice(0, 2)
+        };
+      });
+
+      return { loads, buckets };
+    }
+
+    function estimateTimeToGreen(bucket, now) {
+      const current = calculateBucketLoadAt(bucket, now);
+      if (current < SETTINGS.greenThreshold) return 0;
+
+      const maxHours = 14 * 24;
+      for (let hour = 1; hour <= maxHours; hour += 1) {
+        const future = new Date(now.getTime() + hour * 36e5);
+        if (calculateBucketLoadAt(bucket, future) < SETTINGS.greenThreshold) {
+          return hour;
+        }
+      }
+
+      return maxHours;
+    }
+
+    function calculateBucketLoadAt(bucket, when) {
+      let total = 0;
+
+      for (const workout of state.workouts) {
+        const preset = PRESETS[workout.activity];
+        const weight = preset?.weights[bucket];
+        if (!preset || !weight) continue;
+
+        const workoutDate = new Date(workout.timestamp);
+        if (Number.isNaN(workoutDate.getTime())) continue;
+
+        const elapsedHours = Math.max(0, (when - workoutDate) / 36e5);
+        const halfLifeHours = preset.halfLifeHours || SETTINGS.defaultRecoveryHalfLifeHours;
+        const tau = halfLifeHours / Math.log(2);
+        const durationFactor = Math.max(0.1, workout.durationMinutes / 60);
+        const intensityFactor = INTENSITIES[workout.intensity]?.factor || 1;
+        const noveltyFactor = Number(workout.novelty) || 1;
+        const impulse = durationFactor * intensityFactor * weight * noveltyFactor * preset.loadMultiplier;
+        total += impulse * Math.exp(-elapsedHours / tau);
+      }
+
+      return total;
+    }
+
+    function renderAnswer(recovery, now) {
+      const redBuckets = recovery.buckets.filter((bucket) => bucket.status === "red");
+      const orangeBuckets = recovery.buckets.filter((bucket) => bucket.status === "orange");
+      const worst = redBuckets.length ? "red" : orangeBuckets.length ? "orange" : "green";
+      const colors = { red: "var(--red)", orange: "var(--orange)", green: "var(--green)" };
+
+      let headline = "Green light.";
+      let copy = "Most buckets are low. You can train normally, while still listening to soreness and sleep.";
+
+      if (worst === "red") {
+        headline = "Rest or go very easy.";
+        copy = `${listNames(redBuckets)} ${redBuckets.length === 1 ? "is" : "are"} still heavily loaded. Choose recovery work or train around those areas.`;
+      } else if (worst === "orange") {
+        headline = "Caution.";
+        copy = `${listNames(orangeBuckets)} ${orangeBuckets.length === 1 ? "is" : "are"} still carrying fatigue. Keep intensity lower or pick a different focus.`;
+      }
+
+      els.answerCard.style.setProperty("--status-color", colors[worst]);
+      els.answerHeadline.textContent = headline;
+      els.answerCopy.textContent = copy;
+
+      const totalLoad = recovery.buckets.reduce((sum, bucket) => sum + bucket.load, 0);
+      const updated = now.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+      els.answerMeta.innerHTML = [
+        pill(worst, `${capitalize(worst)} overall`),
+        pill("green", `${state.workouts.length} workout${state.workouts.length === 1 ? "" : "s"} logged`),
+        pill("orange", `Updated ${updated}`),
+        pill("green", `Total load ${Math.round(totalLoad)}`)
+      ].join("");
+    }
+
+    function renderStatusGrid(recovery) {
+      els.statusGrid.innerHTML = recovery.buckets.map((bucket) => {
+        const color = statusColor(bucket.status);
+        const fill = Math.min(100, Math.round(bucket.load));
+        const contributors = bucket.contributors.length
+          ? bucket.contributors.map((item) => `${escapeHtml(item.label)} ${Math.round(item.amount)}`).join(", ")
+          : "No meaningful recent load";
+
+        return `
+          <article class="bucket-card ${bucket.status}" style="--bucket-color: ${color}; --fill-width: ${fill}%;">
+            <div class="bucket-top">
+              <div class="bucket-name">${escapeHtml(bucket.label)}</div>
+              <div class="bucket-state">${bucket.status}</div>
+            </div>
+            <div class="load-line" aria-hidden="true"><div class="load-fill"></div></div>
+            <p class="bucket-detail">
+              Load ${Math.round(bucket.load)}.
+              ${bucket.timeToGreen ? `Green in about ${formatHours(bucket.timeToGreen)}.` : "Green now."}
+            </p>
+            <div class="contributors">${contributors}</div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderBodyMap(recovery) {
+      const bucketsByKey = Object.fromEntries(recovery.buckets.map((bucket) => [bucket.key, bucket]));
+
+      document.querySelectorAll(".muscle-region[data-bucket]").forEach((region) => {
+        const bucket = bucketsByKey[region.dataset.bucket];
+        if (!bucket) return;
+
+        region.dataset.status = bucket.status;
+        region.setAttribute(
+          "aria-label",
+          `${bucket.label}: ${bucket.status}, load ${Math.round(bucket.load)}`
+        );
+      });
+    }
+
+    function renderRecommendations(loads) {
+      const scored = Object.entries(PRESETS).map(([key, preset]) => {
+        let score = 0;
+        let weightSum = 0;
+
+        for (const [bucket, weight] of Object.entries(preset.weights)) {
+          score += (loads[bucket] || 0) * weight;
+          weightSum += weight;
+        }
+
+        return {
+          key,
+          label: preset.label,
+          score: weightSum ? score / weightSum : 0
+        };
+      });
+
+      const good = scored.filter((item) => item.score < 22).sort((a, b) => a.score - b.score).slice(0, 3);
+      const careful = scored.filter((item) => item.score >= 22 && item.score < 55).sort((a, b) => a.score - b.score).slice(0, 3);
+      const avoid = scored.filter((item) => item.score >= 55).sort((a, b) => b.score - a.score).slice(0, 3);
+
+      els.recommendations.innerHTML = [
+        recommendation("Good today", good, "Nothing obvious yet"),
+        recommendation("Go light", careful, "No caution items"),
+        recommendation("Avoid hard", avoid, "No avoid items")
+      ].join("");
+    }
+
+    function renderHistory() {
+      const workouts = [...state.workouts]
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .slice(0, 12);
+
+      if (!workouts.length) {
+        els.historyList.innerHTML = `<div class="empty">No workouts logged yet. Add one and the map wakes up.</div>`;
+        return;
+      }
+
+      els.historyList.innerHTML = workouts.map((workout) => {
+        const preset = PRESETS[workout.activity];
+        const date = new Date(workout.timestamp);
+        const intensity = INTENSITIES[workout.intensity]?.label || "Moderate";
+        const bucketNames = Object.entries(preset?.weights || {})
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 4)
+          .map(([bucket]) => bucketLabel(bucket))
+          .join(", ");
+
+        return `
+          <article class="workout-item">
+            <div class="workout-main">
+              <div>
+                <div class="workout-title">${escapeHtml(preset?.label || workout.activity)}</div>
+                <div class="workout-meta">
+                  ${date.toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
+                  &middot; ${workout.durationMinutes} min
+                  &middot; ${escapeHtml(intensity)}
+                  ${Number(workout.novelty) > 1 ? "&middot; new/unusual" : ""}
+                </div>
+              </div>
+              <button class="danger-button" type="button" data-delete-id="${escapeHtml(workout.id)}">Delete</button>
+            </div>
+            <div class="workout-buckets">${escapeHtml(bucketNames || "No mapped buckets")}</div>
+            ${workout.notes ? `<div class="workout-buckets">${escapeHtml(workout.notes)}</div>` : ""}
+          </article>
+        `;
+      }).join("");
+    }
+
+    function recommendation(title, items, fallback) {
+      const text = items.length ? items.map((item) => item.label).join(", ") : fallback;
+      return `
+        <article class="recommendation">
+          <h3>${escapeHtml(title)}</h3>
+          <p>${escapeHtml(text)}</p>
+        </article>
+      `;
+    }
+
+    function pill(status, text) {
+      return `
+        <span class="pill">
+          <span class="status-dot" style="--dot-color: ${statusColor(status)};"></span>
+          ${escapeHtml(text)}
+        </span>
+      `;
+    }
+
+    function getStatus(load) {
+      if (load >= SETTINGS.orangeThreshold) return "red";
+      if (load >= SETTINGS.greenThreshold) return "orange";
+      return "green";
+    }
+
+    function statusColor(status) {
+      if (status === "red") return "var(--red)";
+      if (status === "orange") return "var(--orange)";
+      return "var(--green)";
+    }
+
+    function listNames(buckets) {
+      const names = buckets.slice(0, 3).map((bucket) => bucket.label);
+      if (buckets.length > 3) names.push(`${buckets.length - 3} more`);
+      return names.join(", ");
+    }
+
+    function formatHours(hours) {
+      if (hours < 24) return `${hours}h`;
+      const days = Math.floor(hours / 24);
+      const rest = hours % 24;
+      return rest ? `${days}d ${rest}h` : `${days}d`;
+    }
+
+    function bucketLabel(key) {
+      return BUCKETS.find(([bucket]) => bucket === key)?.[1] || key;
+    }
+
+    function capitalize(value) {
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    function setDefaultTimestamp() {
+      els.timestampInput.value = toLocalDateTimeValue(new Date());
+    }
+
+    function toLocalDateTimeValue(date) {
+      const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return offsetDate.toISOString().slice(0, 16);
+    }
+
+    function parseLocalDateTime(value) {
+      if (!value) return null;
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function loadState() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return {
+          workouts: Array.isArray(parsed?.workouts) ? parsed.workouts : []
+        };
+      } catch {
+        return { workouts: [] };
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        settings: SETTINGS,
+        workouts: state.workouts
+      }));
+    }
+
+    function exportJson() {
+      return JSON.stringify({
+        exportedAt: new Date().toISOString(),
+        settings: SETTINGS,
+        workouts: state.workouts
+      }, null, 2);
+    }
+
+    function validateImportedWorkouts(imported) {
+      const workouts = Array.isArray(imported?.workouts) ? imported.workouts : null;
+      if (!workouts) throw new Error("Import must contain a workouts array.");
+
+      return workouts.map((workout, index) => {
+        if (!PRESETS[workout.activity]) {
+          throw new Error(`Workout ${index + 1} has an unknown activity.`);
+        }
+
+        const timestamp = new Date(workout.timestamp);
+        const durationMinutes = Number(workout.durationMinutes);
+        const intensity = INTENSITIES[workout.intensity] ? workout.intensity : "moderate";
+
+        if (Number.isNaN(timestamp.getTime())) {
+          throw new Error(`Workout ${index + 1} has an invalid timestamp.`);
+        }
+
+        if (!Number.isFinite(durationMinutes) || durationMinutes <= 0) {
+          throw new Error(`Workout ${index + 1} has an invalid duration.`);
+        }
+
+        return {
+          id: String(workout.id || createId()),
+          activity: workout.activity,
+          timestamp: timestamp.toISOString(),
+          durationMinutes,
+          intensity,
+          novelty: Number(workout.novelty) > 1 ? 1.25 : 1,
+          notes: String(workout.notes || "").slice(0, 300)
+        };
+      });
+    }
+
+    function createId() {
+      if (globalThis.crypto?.randomUUID) {
+        return globalThis.crypto.randomUUID();
+      }
+
+      return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      window.clearTimeout(showToast.timeout);
+      showToast.timeout = window.setTimeout(() => {
+        els.toast.classList.remove("show");
+      }, 2200);
+    }
+  </script>
+</body>
+</html>
